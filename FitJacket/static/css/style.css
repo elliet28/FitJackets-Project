@@ -1,0 +1,207 @@
+html, body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #0a0f24;
+    color: #ffffff;
+}
+
+label,
+.form-label {
+    color: #e6e6e6 !important;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #0a0f24 0%, #1a2a6c 100%) !important;
+}
+.navbar a.nav-link {
+    color: #e6e6e6 !important;
+    font-weight: 500;
+}
+.nav-link:hover {
+    color: #00ffe5 !important;
+}
+.navbar a.nav-link:hover {
+    color: #00ffe5 !important;
+}
+.btn {
+    background-color: #1a2a6c !important;
+    color: #fff;
+    border: 2px solid #00ffe5 !important;
+}
+.no-bullets {
+    list-style-type: none;
+    padding-left: 0;
+}
+.btn:hover {
+    background-color: #00ffe5 !important;
+    color: #0a0f24 !important;
+}
+
+.form-control {
+    background-color: #ffffff;
+    border: 1px solid #00ffe5;
+    color: #ffffff;
+}
+.form-control:focus {
+    box-shadow: 0 0 5px 2px rgba(0, 255, 229, 0.5);
+    border-color: #00ffe5;
+}
+
+.card,
+.card-body,
+.card h5.card-title,
+.card .card-text,
+.card .card-text strong,
+.card .card-body details summary,
+.card .card-body li {
+  color: #ffffff !important;
+}
+
+.nav-link.active {
+  background-color: #ffffff !important;
+  color: #0a0f24 !important;
+  box-shadow: 0 0 8px rgba(0,255,229,0.7);
+}
+
+.ms-footer, .ms-footer-bottom {
+    background-color: #0a0f24 !important;
+    color: #ffffff;
+}
+.ms-footer a, .ms-footer-bottom a {
+    color: #00ffe5;
+}
+.ms-footer a:hover, .ms-footer-bottom a:hover {
+    color: #fff;
+}
+
+h2, h4, h5 {
+    color: #00ffe5;
+}
+
+.card {
+    background-color: #12172f;
+    border: 1px solid #1a2a6c;
+    box-shadow: 0 0 8px rgba(0,255,229,0.7);
+    box-shadow: 0 0 15px rgba(0, 255, 229, 0.1);
+    
+}
+
+a {
+    color: #00ffe5;
+}
+a:hover {
+    color: #fff;
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in-out both;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.scale-hover {
+    transition: transform 0.3s ease-in-out;
+}
+.scale-hover:hover {
+    transform: scale(1.03);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav {
+        background-color: #0a0f24;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    .content-wrapper {
+        padding: 1rem;
+    }
+    .form-control {
+        font-size: 1rem;
+    }
+    .btn {
+        font-size: 1rem;
+    }
+    h2, h4 {
+        font-size: 1.5rem;
+    }
+}
+
+.transparent-table {
+    background-color: transparent !important;
+}
+
+.transparent-table thead,
+.transparent-table tbody,
+.transparent-table tr,
+.transparent-table th,
+.transparent-table td {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: inherit; /* Optional: to retain text color */
+}
+
+.home-container {
+    margin: 3rem auto;
+}
+
+.home-container h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.home-container p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.home-container .no-bullets li {
+    margin-bottom: 1rem;
+}
+
+.home-container .no-bullets a {
+    font-size: 1.6rem;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.home-container .no-bullets a:hover {
+    transform: translateY(-3px);
+    text-shadow: 0 0 8px rgba(0, 255, 229, 0.6);
+}
+
+/* full-screen overlay */
+#loading-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+/* simple CSS spinner */
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #333;
+  border-radius: 50%;
+  width: 60px; height: 60px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
