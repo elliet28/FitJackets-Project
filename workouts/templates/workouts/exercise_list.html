@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Exercise Library</h2>
+  {% if exercises %}
+    <div class="row">
+      {% for exercise in exercises %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <img src="{{ exercise.gifUrl }}" class="card-img-top" alt="{{ exercise.name }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ exercise.exercise_name }}</h5>
+              <p class="card-text">
+                <strong>Body Part:</strong> {{ exercise.bodyPart }}<br>
+                <strong>Target:</strong> {{ exercise.target }}<br>
+                <strong>Equipment:</strong> {{ exercise.equipment }}<br>
+              </p>
+              <details>
+                <summary>Instructions</summary>
+                <ol>
+                  {% for step in exercise.instructions %}
+                    <li>{{ step }}</li>
+                  {% endfor %}
+                </ol>
+                <form action="{% url 'workouts:delete_exercise' exercise.pk %}" method="post" class="mt-2">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
+                </form>
+              </details>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">No exercises found.</div>
+  {% endif %}
+    <a href="{% url 'workouts:add_exercises' %}" class="btn btn-primary btn-lg">Add more exercises...</a>
+</div>
+{% endblock %}

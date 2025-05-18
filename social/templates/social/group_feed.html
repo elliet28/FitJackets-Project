@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>{{ group.title }} Members</h2>
+
+    <!-- Display members -->
+    <ul>
+        {% for member in members %}
+            <li>{{ member.username }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Button to go back to the main social hub page -->
+    <a href="{% url 'social_hub' %}">
+        <button>Back to Social Hub</button>
+    </a>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block content %}
+<div class="container mt-4 fade-in">
+
+<h1 class="text-center mb-4">Challenge Leaderboards</h1>
+
+<div class="row">
+    {% for challenge in challenges %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm p-4">
+            <h5 class="card-title mb-3">{{ challenge.name }}</h5>
+            <p class="card-text">{{ challenge.description }}</p>
+                <table class="table table-sm transparent-table">
+                <thead>
+                    <tr style="background-color: transparent;">
+                            <th scope="col">User</th>
+                            <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if challenge.members %}
+                        {% for user_id, progress in challenge.members.items %}
+                        <tr style="background-color: transparent;">
+                            <td>{{ progress.username }}</td>
+                            <td>{{ progress.progress }}</td>
+                    </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="2" class="text-muted text-center">
+                                <p class="card-text">No Participants yet</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            {% if current_user not in challenge.members.keys %}
+            <!-- Join Challenge Button -->
+            <form method="POST" action="{% url 'join_challenge' challenge.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary w-100">Join Challenge</button>
+            </form>
+            {% endif %}
+            {% if current_user in challenge.members.keys %}
+            <!-- Leave Challenge Button -->
+            <form method="POST" action="{% url 'leave_challenge' challenge.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger w-100">Leave Challenge</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

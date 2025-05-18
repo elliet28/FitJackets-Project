@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">Exercise Browser</h2>
+  <hr/>
+
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs mb-4" id="exerciseTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">All Exercises</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="bodypart-tab" data-toggle="tab" href="#bodypart" role="tab" aria-controls="bodypart" aria-selected="false">By Body Part</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="equipment-tab" data-toggle="tab" href="#equipment" role="tab" aria-controls="equipment" aria-selected="false">By Equipment</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="target-tab" data-toggle="tab" href="#target" role="tab" aria-controls="target" aria-selected="false">By Target</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="search-tab" data-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="false">Search by Criteria</a>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="exerciseTabContent">
+    <!-- ALL EXERCISES -->
+    <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+      <button class="btn btn-primary mb-3" id="fetchAllBtn">Fetch All Exercises</button>
+      <div class="row" id="allExercisesContainer"></div>
+    </div>
+
+    <!-- BY BODY PART -->
+    <div class="tab-pane fade" id="bodypart" role="tabpanel" aria-labelledby="bodypart-tab">
+      <select id="bodyPartSelect" class="form-control mb-3" style="max-width:300px;">
+        <option value="">Select a body part...</option>
+      </select>
+      <div class="row" id="bodyPartExercisesContainer"></div>
+    </div>
+
+    <!-- BY EQUIPMENT -->
+    <div class="tab-pane fade" id="equipment" role="tabpanel" aria-labelledby="equipment-tab">
+      <select id="equipmentSelect" class="form-control mb-3" style="max-width:300px;">
+        <option value="">Select equipment...</option>
+      </select>
+      <div class="row" id="equipmentExercisesContainer"></div>
+    </div>
+
+    <!-- BY TARGET -->
+    <div class="tab-pane fade" id="target" role="tabpanel" aria-labelledby="target-tab">
+      <select id="targetSelect" class="form-control mb-3" style="max-width:300px;">
+        <option value="">Select a target...</option>
+      </select>
+      <div class="row" id="targetExercisesContainer"></div>
+    </div>
+
+    <!-- SEARCH BY CRITERIA -->
+    <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+      <div class="form-inline mb-3" style="max-width:500px;">
+        <select id="searchFilter" class="form-control mr-2">
+          <option value="">Filter Type...</option>
+          <option value="bodyPart">Body Part</option>
+          <option value="equipment">Equipment</option>
+          <option value="target">Target</option>
+        </select>
+        <input type="text" class="form-control mr-2" placeholder="Enter search term..." id="searchQuery">
+        <button class="btn btn-success" id="searchBtn">Search</button>
+      </div>
+      <div class="row" id="searchResultsContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Utility: create a card for an exercise
+  function createExerciseCard(ex) {
+    const col = document.createElement('div');
+    col.classList.add('col-md-4', 'mb-3');
+    col.innerHTML = `
+      <div class="card h-100">
+        <img src="${ex.gifUrl}" class="card-img-top" alt="${ex.name}">
+        <div class="card-body">
+          <h5 class="card-title">${ex.name}</h5>
+          <p class="card-text">
+            <strong>Body Part:</strong> ${ex.bodyPart}<br>
+            <strong>Target:</strong> ${ex.target}<br>
+            <strong>Equipment:</strong> ${ex.equipment}
+          </p>
+        </div>
+      </div>
+    `;
+    return col;
+  }
+
+  // Fetch and display all exercises
+  document.getElementById('fetchAllBtn').addEventListener('click', () => {
+    fetch("{% url 'workouts:api_exercises_list' %}")
+      .then(r => r.json())
+      .then(data => {
+        const c = document.getElementById('allExercisesContainer');
+        c.innerHTML = '';
+        if (Array.isArray(data)) data.forEach(ex => c.appendChild(createExerciseCard(ex)));
+      });
+  });
+
+  // Generic: load list and populate dropdown
+  function loadList(selectId, url) {
+    const sel = document.getElementById(selectId);
+    if (sel.options.length > 1) return; // already loaded
+    fetch(url)
+      .then(r => r.json())
+      .then(list => {
+        list.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item;
+          opt.textContent = item;
+          sel.appendChild(opt);
+        });
+      });
+  }
+
+  // On tab click, load the corresponding list
+  const bodyPartUrl = "{% url 'workouts:api_bodypart_list' %}";
+  const equipmentUrl = "{% url 'workouts:api_equipment_list' %}";
+  const targetUrl = "{% url 'workouts:api_target_list' %}";
+
+  document.getElementById('bodypart-tab').addEventListener('click', () => {
+    loadList('bodyPartSelect', bodyPartUrl);
+  });
+  document.getElementById('equipment-tab').addEventListener('click', () => {
+    loadList('equipmentSelect', equipmentUrl);
+  });
+  document.getElementById('target-tab').addEventListener('click', () => {
+    loadList('targetSelect', targetUrl);
+  });
+
+  // Listen for Bootstrap tab show events (in case of hash navigation)
+  document.querySelectorAll('a[data-toggle="tab"]').forEach(tab => {
+    tab.addEventListener('shown.bs.tab', e => {
+      const id = e.target.id;
+      if (id === 'bodypart-tab') loadList('bodyPartSelect', bodyPartUrl);
+      if (id === 'equipment-tab') loadList('equipmentSelect', equipmentUrl);
+      if (id === 'target-tab') loadList('targetSelect', targetUrl);
+    });
+  });
+
+  // On page load, check hash and load appropriate list
+  document.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash;
+    if (hash === '#bodypart') loadList('bodyPartSelect', bodyPartUrl);
+    if (hash === '#equipment') loadList('equipmentSelect', equipmentUrl);
+    if (hash === '#target') loadList('targetSelect', targetUrl);
+  });
+
+  // On dropdown change, fetch and show exercises
+  document.getElementById('bodyPartSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    if (!val) return;
+    fetch(`{% url 'workouts:api_exercises_by_bodypart' bodypart='PLACEHOLDER' %}`.replace('PLACEHOLDER', val))
+      .then(r => r.json())
+      .then(data => {
+        const c = document.getElementById('bodyPartExercisesContainer');
+        c.innerHTML = '';
+        if (Array.isArray(data)) data.forEach(ex => c.appendChild(createExerciseCard(ex)));
+      });
+  });
+
+  document.getElementById('equipmentSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    if (!val) return;
+    fetch(`{% url 'workouts:api_exercises_by_equipment' equipment='PLACEHOLDER' %}`.replace('PLACEHOLDER', val))
+      .then(r => r.json())
+      .then(data => {
+        const c = document.getElementById('equipmentExercisesContainer');
+        c.innerHTML = '';
+        if (Array.isArray(data)) data.forEach(ex => c.appendChild(createExerciseCard(ex)));
+      });
+  });
+
+  document.getElementById('targetSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    if (!val) return;
+    fetch(`{% url 'workouts:api_exercises_by_target' target='PLACEHOLDER' %}`.replace('PLACEHOLDER', val))
+      .then(r => r.json())
+      .then(data => {
+        const c = document.getElementById('targetExercisesContainer');
+        c.innerHTML = '';
+        if (Array.isArray(data)) data.forEach(ex => c.appendChild(createExerciseCard(ex)));
+      });
+  });
+
+  // Search by criteria
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const filter = document.getElementById('searchFilter').value;
+    const query = document.getElementById('searchQuery').value.trim();
+    const c = document.getElementById('searchResultsContainer');
+    c.innerHTML = '';
+    if (!filter || !query) {
+      c.innerHTML = '<p class="text-warning">Select filter and enter query.</p>';
+      return;
+    }
+    fetch(`{% url 'workouts:api_search_exercises' %}?filter_type=${filter}&query=${encodeURIComponent(query)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) data.forEach(ex => c.appendChild(createExerciseCard(ex)));
+        else c.innerHTML = `<p class="text-danger">${data.error}</p>`;
+      });
+  });
+</script>
+{% endblock %}
