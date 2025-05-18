@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_scripts %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        console.log("Chart script loaded");
+    
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        let chart;  // Declare the chart variable globally
+        let data;   // Declare the data variable globally
+        let options;
+
+        function drawChart() {
+            const chartData = JSON.parse('{{ chart_data|safe }}');
+
+            data = new google.visualization.DataTable();
+            data.addColumn('string', 'X');
+            data.addColumn('number', 'Weight (lbs)');
+            data.addRows(chartData);
+
+            options = {
+                title: "Weight over the Past Six Months",
+                titleTextStyle: {
+                    color: '#FFF',
+                    fontSize: 18,
+                },
+                animation:{
+                    duration: 1000,
+                    easing: 'out',
+                    "startup": true
+                },
+                legend: { position: 'bottom', textStyle: { color: '#FFF' }, },
+                hAxis: { 
+                    title: "Date",
+                    titleTextStyle: { color: '#FFF' },
+                    textStyle: { color: '#FFF' },
+                },
+                vAxis: {
+                    title: "Weight (lbs)",
+                    minValue: 0,
+                    titleTextStyle: { color: '#FFF' },
+                    textStyle: { color: '#FFF' },
+                },
+                backgroundColor: 'transparent',
+                fontName: 'Poppins',
+                colors: ['#04c2dc'],
+            };
+            
+            chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+            chart.draw(data, options);
+        }
+
+        window.onresize = function() {
+            if (chart) {
+                chart.draw(data, options);
+            }
+        };
+    </script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 fade-in">
+    <h2 class="text-center">Weight</h2>
+    <hr/>
+    <div class="row mt-5">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm p-4">
+                <h5 class="card-title mb-3">Weight</h5>
+                <a href="{% url 'dashboard:log_weight' %}" class="btn btn-primary">Log Weight</a>
+            </div>
+        </div>
+    </div>
+    <!-- Dashboard Sections -->
+    <div class="row mt-5">
+        <!-- Chart Section -->
+        <div class="col-md-8 mb-4">
+            <div class="col-md-12">
+                <div class="card-header text-white">
+                    <h5 class="card-title mb-4">Progress</h5>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div id="line_chart" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card-header text-white">
+                <h5 class="card-title mb-4">Weight Logs</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <div class="row">
+                        {% for log in recent_logs %}
+                        <div class="row-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <h5 class="card-title col-md-9"><strong>{{ log.date }}</strong></h5>
+                                    </div>
+                                    <table class="table table-sm transparent-table">
+                                        <thead>
+                                            <tr style="background-color: transparent;">
+                                                <th scope="col">Weight (lbs)</th>
+                                                <th scope="col">Notes:</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="background-color: transparent;">
+                                                <td>{{ log.weight }}</td>
+                                                <td>{{ log.notes }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                       <a href="{% url 'dashboard:edit_weight_log' log.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <a href="{% url 'dashboard:delete_weight_log' log.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p>No weight logged yet.</p>
+                        {% endfor %}
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
